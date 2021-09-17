@@ -72,10 +72,10 @@ func (r *Repository) findByIDSampleData() error {
 
 	for i := 1; i < 30; i++ {
 		randomID := rand.Intn(49)
-		_, err := r.findByID(randomID)
-		if err != nil {
-			return err
-		}
+		r.findByID(randomID)
+		//if err != nil {
+		//	fmt.Printf("random id: %d is deleted",randomID)
+		//}
 	}
 	return nil
 }
