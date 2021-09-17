@@ -1,0 +1,15 @@
+{
+  "name": "Benchmark Application",
+  "code": "Benchmark",
+  "database": {
+    "user": "admin",
+    "password": "admin123456",
+    "databaseName": "agileful",
+    "host": "localhost",
+    "port": 5432
+  },
+  "apiSettings": {
+    "port": 3000
+  },
+  "appModelFileName": "./settings/app_model.xml"
+}
