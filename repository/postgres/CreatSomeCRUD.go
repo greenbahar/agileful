@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	_ "sync"
 	"testTask/domain"
 	"time"
 )
 
+//var w sync.WaitGroup
+var working = 6
 var user = &domain.UserInfoModel{
 	Name:     "Emma",
 	Email:    "emma@mial.com",
@@ -19,37 +22,15 @@ func (r *Repository) BenchMarkResult() ([]*domain.ExecutionTimeModel, error) {
 	fmt.Println("START BenchMarkResult")
 	defer fmt.Println("END BenchMarkResult")
 
-	err := r.createSampleData()
+	err := r.crud()
 	if err != nil {
 		return nil, err
 	}
-	err = r.updateSampleData()
-	if err != nil {
-		return nil, err
-	}
-	err = r.findByIDSampleData()
-	if err != nil {
-		return nil, err
-	}
-	err = r.findSampleData()
-	if err != nil {
-		return nil, err
-	}
-	err = r.paginateSampleData()
-	if err != nil {
-		return nil, err
-	}
-	err = r.deleteSampleData()
-	if err != nil {
-		return nil, err
-	}
-
 	records, err := r.sortByTimeSpent()
 	if err != nil {
 		return nil, err
 	}
-
-	return records, nil
+	return records, err
 }
 
 // createSampleData create sample data
@@ -139,6 +120,35 @@ func (r *Repository) deleteSampleData() error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// crud perform CRUD operations in the database
+func (r *Repository) crud() error {
+	err := r.createSampleData()
+	if err != nil {
+		return err
+	}
+	err = r.updateSampleData()
+	if err != nil {
+		return err
+	}
+	err = r.findByIDSampleData()
+	if err != nil {
+		return err
+	}
+	err = r.findSampleData()
+	if err != nil {
+		return err
+	}
+	err = r.paginateSampleData()
+	if err != nil {
+		return err
+	}
+	err = r.deleteSampleData()
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -36,7 +36,6 @@ func (b *BenchMarkHandler) benchmark(c *fiber.Ctx) error {
 	}
 
 	sortedBenchmark, err2 := b.repo.BenchMarkResult()
-	fmt.Println(sortedBenchmark, err2)
 	if err2 != nil {
 		return c.Status(500).JSON(&fiber.Map{
 			"success": false,

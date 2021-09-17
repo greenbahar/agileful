@@ -12,15 +12,15 @@ type UserInfoInterface interface {
 
 // UserInfoModel represents the user information model
 type UserInfoModel struct {
-	ID       int		`db:"id"`
-	Name     string		`db:"namee"`
-	Email    string		`db:"email"`
-	PassWord string		`db:"password"`
+	ID       int    `db:"id"`
+	Name     string `db:"namee"`
+	Email    string `db:"email"`
+	PassWord string `db:"password"`
 }
 
 // UserInfoModel represents the user information model
 type ExecutionTimeModel struct {
-	ID      	 int		`db:"id"`
-	Query   	 string		`db:"query"`
-	TimeSpent    string		`db:"time_spent"`
+	ID        int    `db:"id"`
+	Query     string `db:"query"`
+	TimeSpent int    `db:"time_spent"`
 }

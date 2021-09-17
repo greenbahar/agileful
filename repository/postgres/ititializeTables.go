@@ -7,22 +7,22 @@ import (
 	"time"
 )
 
-func (r *Repository) CreateTables(db *sql.DB) error{
+func (r *Repository) CreateTables(db *sql.DB) error {
 	fmt.Println("START createTable")
 	defer fmt.Println("END createTable")
 
-	r.db=db
+	r.db = db
 	err := r.deleteTables()
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 
 	err = r.createUsersTable()
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	err = r.createExecutionTimeTable()
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 
@@ -30,17 +30,17 @@ func (r *Repository) CreateTables(db *sql.DB) error{
 }
 
 // DeleteTables delete all tables in the data base
-func (r *Repository) deleteTables() error{
+func (r *Repository) deleteTables() error {
 	fmt.Println("START DeleteTables")
 	defer fmt.Println("END DeleteTables")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	sqlStatement := "DROP TABLE users, executionTime;"
+	sqlStatement := "DROP TABLE IF EXISTS users, executionTime;"
 
-	_, err :=r.db.QueryContext(ctx,sqlStatement)
-	if err!=nil{
-		fmt.Println("delete err: ",err)
+	_, err := r.db.QueryContext(ctx, sqlStatement)
+	if err != nil {
+		fmt.Println("delete err: ", err)
 		return err
 	}
 	return nil
@@ -57,8 +57,8 @@ func (r *Repository) createUsersTable() error {
 		"password character varying(255) NOT NULL," +
 		"PRIMARY KEY (id));"
 
-	_, err :=r.db.Exec(sqlStatement)
-	if err!=nil{
+	_, err := r.db.Exec(sqlStatement)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -71,13 +71,12 @@ func (r *Repository) createExecutionTimeTable() error {
 
 	sqlStatement := "CREATE TABLE executionTime (id serial NOT NULL," +
 		"query character varying(255) NOT NULL," +
-		"time_spent character varying(255) NOT NULL," +
+		"time_spent integer NOT NULL," +
 		"PRIMARY KEY (id));"
 
-	_, err :=r.db.Exec(sqlStatement)
-	if err!=nil{
+	_, err := r.db.Exec(sqlStatement)
+	if err != nil {
 		return err
 	}
 	return nil
 }
-
