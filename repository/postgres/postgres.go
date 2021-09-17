@@ -48,13 +48,14 @@ func (r *Repository) findByID(id int) (*domain.UserInfoModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	err := r.db.QueryRowContext(ctx, "SELECT id, namee, email, password FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Email, &user.PassWord)
 	if err != nil {
 		return nil, err
 	}
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	r.insertTimeSpent("FindByID", executionTime)
 	return user, nil
 }
@@ -63,21 +64,21 @@ func (r *Repository) findByID(id int) (*domain.UserInfoModel, error) {
 func (r *Repository) find() ([]*domain.UserInfoModel, error) {
 
 	users := make([]*domain.UserInfoModel, 0)
+	limit := 10
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	limit := 10
-
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	rows, err := r.db.QueryContext(ctx, "SELECT id, namee, email, password FROM users LIMIT $1", limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	r.insertTimeSpent("Find", executionTime)
 
 	for rows.Next() {
@@ -111,13 +112,14 @@ func (r *Repository) create(user *domain.UserInfoModel) error {
 	}
 	defer stmt.Close()
 
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	_, err = stmt.ExecContext(ctx, user.Name, user.Email, user.PassWord)
 	if err != nil {
 		return err
 	}
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	err = r.insertTimeSpent("Create", executionTime)
 	if err != nil {
 		panic(err)
@@ -138,13 +140,14 @@ func (r *Repository) update(user *domain.UserInfoModel) error {
 	}
 	defer stmt.Close()
 
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	_, err = stmt.ExecContext(ctx, user.Name, user.Email, user.PassWord, user.ID)
 	if err != nil {
 		return err
 	}
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	r.insertTimeSpent("Update", executionTime)
 	return nil
 }
@@ -162,13 +165,14 @@ func (r *Repository) delete(id int) error {
 	}
 	defer stmt.Close()
 
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	_, err = stmt.ExecContext(ctx, id)
 	if err != nil {
 		return err
 	}
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	r.insertTimeSpent("Delete", executionTime)
 	return nil
 }
@@ -186,13 +190,14 @@ func (r *Repository) pagination(page int) ([]*domain.UserInfoModel, error) {
 
 	query := `SELECT id,namee,email,password FROM users ORDER BY id LIMIT $2 OFFSET $1`
 
-	queryStart := time.Now()
+	queryStart := time.Now().Nanosecond()
 	rows, err := r.db.QueryContext(ctx, query, offset, limit)
 	if err != nil {
 		return nil, err
 	}
-	queryEnd := time.Now()
-	executionTime := queryEnd.Sub(queryStart).String()
+	queryEnd := time.Now().Nanosecond()
+	executionTime := strconv.Itoa(queryEnd - queryStart)
+	//executionTime := queryEnd.Sub(queryStart).String()
 	r.insertTimeSpent("Pagination"+strconv.Itoa(page), executionTime)
 
 	defer rows.Close()
