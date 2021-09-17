@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -22,7 +21,7 @@ func NewRepository(repo *Repository, db *sql.DB) (*Repository, error) {
 	fmt.Println("START NewRepository")
 	defer fmt.Println("END START NewRepository")
 
-	repo.db=db
+	repo.db = db
 
 	err := db.Ping()
 	if err != nil {
@@ -56,7 +55,7 @@ func (r *Repository) findByID(id int) (*domain.UserInfoModel, error) {
 	}
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	r.insertTimeSpent("FindByID",executionTime)
+	r.insertTimeSpent("FindByID", executionTime)
 	return user, nil
 }
 
@@ -68,10 +67,10 @@ func (r *Repository) find() ([]*domain.UserInfoModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	limit:=10
+	limit := 10
 
 	queryStart := time.Now()
-	rows, err := r.db.QueryContext(ctx, "SELECT id, namee, email, password FROM users LIMIT=$1",limit)
+	rows, err := r.db.QueryContext(ctx, "SELECT id, namee, email, password FROM users LIMIT $1", limit)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +78,7 @@ func (r *Repository) find() ([]*domain.UserInfoModel, error) {
 
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	r.insertTimeSpent("Find",executionTime,)
+	r.insertTimeSpent("Find", executionTime)
 
 	for rows.Next() {
 		user := new(domain.UserInfoModel)
@@ -113,15 +112,14 @@ func (r *Repository) create(user *domain.UserInfoModel) error {
 	defer stmt.Close()
 
 	queryStart := time.Now()
-	result, err := stmt.ExecContext(ctx, user.Name, user.Email, user.PassWord)
-	fmt.Println("result: ", &result)
-	if err!=nil{
+	_, err = stmt.ExecContext(ctx, user.Name, user.Email, user.PassWord)
+	if err != nil {
 		return err
 	}
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	err=r.insertTimeSpent("Create",executionTime)
-	if err!=nil{
+	err = r.insertTimeSpent("Create", executionTime)
+	if err != nil {
 		panic(err)
 	}
 	return nil
@@ -142,12 +140,12 @@ func (r *Repository) update(user *domain.UserInfoModel) error {
 
 	queryStart := time.Now()
 	_, err = stmt.ExecContext(ctx, user.Name, user.Email, user.PassWord, user.ID)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	r.insertTimeSpent("Update",executionTime)
+	r.insertTimeSpent("Update", executionTime)
 	return nil
 }
 
@@ -166,12 +164,12 @@ func (r *Repository) delete(id int) error {
 
 	queryStart := time.Now()
 	_, err = stmt.ExecContext(ctx, id)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	r.insertTimeSpent("Delete",executionTime)
+	r.insertTimeSpent("Delete", executionTime)
 	return nil
 }
 
@@ -186,33 +184,32 @@ func (r *Repository) pagination(page int) ([]*domain.UserInfoModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	query := `SELECT id,namee,email,password FROM users ORDER BY id LIMIT=$2 OFFSET=$1`
+	query := `SELECT id,namee,email,password FROM users ORDER BY id LIMIT $2 OFFSET $1`
 
 	queryStart := time.Now()
-	rows, err := r.db.QueryContext(ctx,query, offset, limit)
+	rows, err := r.db.QueryContext(ctx, query, offset, limit)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	queryEnd := time.Now()
 	executionTime := queryEnd.Sub(queryStart).String()
-	r.insertTimeSpent("Pagination"+strconv.Itoa(page),executionTime)
+	r.insertTimeSpent("Pagination"+strconv.Itoa(page), executionTime)
 
 	defer rows.Close()
 	for rows.Next() {
 		p := &domain.UserInfoModel{}
-		err = rows.Scan(&p)
+		err = rows.Scan(&p.ID, &p.Name, &p.Email, &p.PassWord)
 		if err != nil {
-			log.Println(err)
-			return nil,err
+			return nil, err
 		}
-		users = append(users,p)
+		users = append(users, p)
 	}
 
-	return nil,nil
+	return nil, nil
 }
 
 // insertTimeSpent insert the log of the time spent in query execution
-func (r *Repository) insertTimeSpent(queryName,duration string) error{
+func (r *Repository) insertTimeSpent(queryName, duration string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -225,10 +222,9 @@ func (r *Repository) insertTimeSpent(queryName,duration string) error{
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx, queryName, duration)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
-
