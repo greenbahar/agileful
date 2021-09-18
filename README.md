@@ -1,4 +1,3 @@
-# agileful
 benchmark the queries
 
 
